@@ -24,9 +24,7 @@ from transformers import AlbertTokenizer, AlbertForSequenceClassification
 
 app = Flask(__name__, static_url_path='/static', static_folder='../static')
 
-#UPLOAD_FOLDER = ''
 ALLOWED_EXTENSIONS = {'mp3', 'm4a'}
-#app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -90,7 +88,8 @@ def getCategory(response):
 
 def generatedResponse(response):
     if response == 0:
-        return 'お世話になっております。キカガクのフナクラと申します。担当のXX様はいらっしゃりますでしょうか'#ここは文字が自然と入るようにしたい
+        return 'お世話'#ここは文字が自然と入るようにしたい
+        #return 'お世話になっております。キカガクのフナクラと申します。担当のXX様はいらっしゃりますでしょうか'#ここは文字が自然と入るようにしたい
     elif response == 1:
         return 'ありがとうございます'
     elif response == 2:
@@ -170,8 +169,6 @@ def predict(text):
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
-    #return "<p>こんにちは</p>"
-    #return render_template('index.html')
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -192,11 +189,18 @@ def upload_file():
                 #txt = transcription['text']
                 txt = "This is a pen"
             #ここで取得した音声データの文字データtxtをベースに推論を実施
+
+            from datetime import datetime
+            now = datetime.now()
+            print("現在の日時1s:", now)
             pred = predict(txt)
+            print("現在の日時1e:", now)
             category_ = getCategory(pred)
             generatedResponse_ = generatedResponse(pred)
             # テキストを音声に変換。まずは初回はカテゴリーnameを音声として入れる
+            print("現在の日時2s:", now)
             tts = gTTS(text=generatedResponse_, lang='ja')
+            print("現在の日時2e:", now)
             #ファイル名を動的にユニークに生成→flaskの使用上、音声ファイルはstatic/audioというファイルでやらないとダメ
             file_name = str(uuid.uuid4()) + ".mp3"
             file_path = os.path.join('static/audio', file_name)
