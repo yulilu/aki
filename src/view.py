@@ -24,9 +24,9 @@ from transformers import AlbertTokenizer, AlbertForSequenceClassification
 
 app = Flask(__name__, static_url_path='/static', static_folder='../static')
 
-UPLOAD_FOLDER = 'C:\\Users\\yokog\\bdr2\\uploads'
+#UPLOAD_FOLDER = ''
 ALLOWED_EXTENSIONS = {'mp3', 'm4a'}
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+#app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -183,7 +183,7 @@ def upload_file():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file_path = os.path.join('uploads', filename)
             file.save(file_path)
             #wisper AIに食べさせられるように音声ファイルをrb形でopenしておく
             with open(file_path, "rb") as f:
