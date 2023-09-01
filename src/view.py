@@ -21,8 +21,10 @@ from gtts import gTTS
 import uuid
 import requests
 from transformers import AlbertTokenizer, AlbertForSequenceClassification
+import logging
 
 app = Flask(__name__, static_url_path='/static', static_folder='../static')
+app.logger.setLevel(logging.DEBUG)
 
 ALLOWED_EXTENSIONS = {'mp3', 'm4a'}
 
@@ -191,16 +193,15 @@ def upload_file():
             #ここで取得した音声データの文字データtxtをベースに推論を実施
 
             from datetime import datetime
-            now = datetime.now()
-            print("現在の日時1s:", now)
+            app.logger.debug("現在の日時1s:", datetime.now())
             pred = predict(txt)
-            print("現在の日時1e:", now)
+            app.logger.debug("現在の日時1e:", datetime.now())
             category_ = getCategory(pred)
             generatedResponse_ = generatedResponse(pred)
             # テキストを音声に変換。まずは初回はカテゴリーnameを音声として入れる
-            print("現在の日時2s:", now)
+            app.logger.debug("現在の日時2s:", datetime.now())
             tts = gTTS(text=generatedResponse_, lang='ja')
-            print("現在の日時2e:", now)
+            app.logger.debug("現在の日時2e:", datetime.now())
             #ファイル名を動的にユニークに生成→flaskの使用上、音声ファイルはstatic/audioというファイルでやらないとダメ
             file_name = str(uuid.uuid4()) + ".mp3"
             file_path = os.path.join('static/audio', file_name)
