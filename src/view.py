@@ -194,7 +194,8 @@ def upload_file():
 
             from datetime import datetime
             app.logger.debug("現在の日時1s: %s", datetime.now())
-            pred = predict(txt)
+            pred = 0
+            #pred = predict(txt)
             app.logger.debug("現在の日時1e: %s", datetime.now())
             category_ = getCategory(pred)
             generatedResponse_ = generatedResponse(pred)
