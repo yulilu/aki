@@ -193,15 +193,15 @@ def upload_file():
             #ここで取得した音声データの文字データtxtをベースに推論を実施
 
             from datetime import datetime
-            app.logger.debug("現在の日時1s:", datetime.now())
+            app.logger.debug("現在の日時1s: %s", datetime.now())
             pred = predict(txt)
-            app.logger.debug("現在の日時1e:", datetime.now())
+            app.logger.debug("現在の日時1e: %s", datetime.now())
             category_ = getCategory(pred)
             generatedResponse_ = generatedResponse(pred)
             # テキストを音声に変換。まずは初回はカテゴリーnameを音声として入れる
-            app.logger.debug("現在の日時2s:", datetime.now())
+            app.logger.debug("現在の日時2s: %s", datetime.now())
             tts = gTTS(text=generatedResponse_, lang='ja')
-            app.logger.debug("現在の日時2e:", datetime.now())
+            app.logger.debug("現在の日時2e: %s", datetime.now())
             #ファイル名を動的にユニークに生成→flaskの使用上、音声ファイルはstatic/audioというファイルでやらないとダメ
             file_name = str(uuid.uuid4()) + ".mp3"
             file_path = os.path.join('static/audio', file_name)
