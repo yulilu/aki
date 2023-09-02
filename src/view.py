@@ -152,21 +152,26 @@ albert_model = AlbertForSequenceClassification.from_pretrained(model_path).cpu()
 albert_tokenizer = AlbertTokenizer.from_pretrained(tokenizer_path)
 
 def predict(text):
+    from datetime import datetime
+    app.logger.debug("現在の日時11: %s", datetime.now())
     # テキストのエンコード
     input_encodings = albert_tokenizer(
         text,
         return_tensors='pt',
-        max_length=70, 
+        max_length=10, 
         padding='max_length',
         truncation=True
     )
-
+    app.logger.debug("現在の日時12: %s", datetime.now())
     # 推論
     with torch.no_grad():
+        app.logger.debug("現在の日時13: %s", datetime.now())
         outputs = albert_model(**input_encodings)
+        app.logger.debug("現在の日時14: %s", datetime.now())
         logits = outputs.logits
+        app.logger.debug("現在の日時15: %s", datetime.now())
         predicted_label = torch.argmax(logits, dim=1).cpu().numpy()[0]
-        
+        app.logger.debug("現在の日時16: %s", datetime.now())
     return predicted_label
 
 @app.route('/', methods=['GET', 'POST'])
@@ -194,8 +199,8 @@ def upload_file():
 
             from datetime import datetime
             app.logger.debug("現在の日時1s: %s", datetime.now())
-            pred = 0
-            #pred = predict(txt)
+            #pred = 0
+            pred = predict(txt)
             app.logger.debug("現在の日時1e: %s", datetime.now())
             category_ = getCategory(pred)
             generatedResponse_ = generatedResponse(pred)
