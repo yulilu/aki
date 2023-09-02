@@ -165,9 +165,19 @@ def predict(text):
     )
     # float16に変換
     # input_encodings = {key: tensor.half() for key, tensor in input_encodings.items()}
-    input_encodings['input_ids'] = input_encodings['input_ids'].to(dtype=torch.int64)
+    # input_encodings['input_ids'] = input_encodings['input_ids'].to(dtype=torch.int64)
     # input_encodings = {k: v.to(dtype=torch.float16) for k, v in input_encodings.items() if k != 'input_ids'}
-    input_encodings = {k: v.to(dtype=torch.float16) if k != 'input_ids' else v for k, v in input_encodings.items()}
+    # input_encodings = {k: v.to(dtype=torch.float16) if k != 'input_ids' else v for k, v in input_encodings.items()}
+
+    # input_idsをtorch.int64にキャスト
+    input_encodings['input_ids'] = input_encodings['input_ids'].to(dtype=torch.int64)
+
+    # token_type_idsもtorch.int64にキャスト（もし使用している場合）
+    if 'token_type_ids' in input_encodings:
+        input_encodings['token_type_ids'] = input_encodings['token_type_ids'].to(dtype=torch.int64)
+
+    # attention_maskをtorch.float16にキャスト
+    input_encodings['attention_mask'] = input_encodings['attention_mask'].to(dtype=torch.float16)
 
 
     app.logger.debug("現在の日時12: %s", datetime.now())
