@@ -148,43 +148,35 @@ def generatedResponse(response):
 model_path = './src/model_files'
 tokenizer_path = './src/tokenizer_files'
 
-#albert_model = AlbertForSequenceClassification.from_pretrained(model_path).cpu().eval()
-albert_model = AlbertForSequenceClassification.from_pretrained(model_path).cpu().half().eval()
-albert_tokenizer = AlbertTokenizer.from_pretrained(tokenizer_path)
+#model = AlbertForSequenceClassification.from_pretrained(model_path).cpu().eval()
+#tokenizer = AlbertTokenizer.from_pretrained(tokenizer_path)
+
+
+#from transformers import AutoTokenizer, AutoModel
+#tokenizer = AutoTokenizer.from_pretrained("line-corporation/line-distilbert-base-japanese", trust_remote_code=True)
+#model = AutoModel.from_pretrained("line-corporation/line-distilbert-base-japanese")
+from transformers import BertJapaneseTokenizer
+from transformers import BertForSequenceClassification
+tokenizer = BertJapaneseTokenizer.from_pretrained("cl-tohoku/bert-base-japanese-whole-word-masking")
+model = BertForSequenceClassification.from_pretrained("cl-tohoku/bert-base-japanese-whole-word-masking")  # この部分は実際のプレトレイン済みの分類モデルに変更してください
+
 
 def predict(text):
     from datetime import datetime
     app.logger.debug("現在の日時11: %s", datetime.now())
     # テキストのエンコード
-    input_encodings = albert_tokenizer(
+    input_encodings = tokenizer(
         text,
         return_tensors='pt',
         max_length=70, 
         padding='max_length',
         truncation=True
     )
-    # float16に変換
-    # input_encodings = {key: tensor.half() for key, tensor in input_encodings.items()}
-    # input_encodings['input_ids'] = input_encodings['input_ids'].to(dtype=torch.int64)
-    # input_encodings = {k: v.to(dtype=torch.float16) for k, v in input_encodings.items() if k != 'input_ids'}
-    # input_encodings = {k: v.to(dtype=torch.float16) if k != 'input_ids' else v for k, v in input_encodings.items()}
-
-    # input_idsをtorch.int64にキャスト
-    input_encodings['input_ids'] = input_encodings['input_ids'].to(dtype=torch.int64)
-
-    # token_type_idsもtorch.int64にキャスト（もし使用している場合）
-    if 'token_type_ids' in input_encodings:
-        input_encodings['token_type_ids'] = input_encodings['token_type_ids'].to(dtype=torch.int64)
-
-    # attention_maskをtorch.float16にキャスト
-    input_encodings['attention_mask'] = input_encodings['attention_mask'].to(dtype=torch.float16)
-
-
     app.logger.debug("現在の日時12: %s", datetime.now())
     # 推論
     with torch.no_grad():
         app.logger.debug("現在の日時13: %s", datetime.now())
-        outputs = albert_model(**input_encodings)
+        outputs = model(**input_encodings)
         app.logger.debug("現在の日時14: %s", datetime.now())
         logits = outputs.logits
         app.logger.debug("現在の日時15: %s", datetime.now())
