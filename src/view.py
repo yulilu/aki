@@ -155,10 +155,18 @@ tokenizer_path = './src/tokenizer_files'
 #from transformers import AutoTokenizer, AutoModel
 #tokenizer = AutoTokenizer.from_pretrained("line-corporation/line-distilbert-base-japanese", trust_remote_code=True)
 #model = AutoModel.from_pretrained("line-corporation/line-distilbert-base-japanese")
-from transformers import BertJapaneseTokenizer
-from transformers import BertForSequenceClassification
-tokenizer = BertJapaneseTokenizer.from_pretrained("cl-tohoku/bert-base-japanese-whole-word-masking")
-model = BertForSequenceClassification.from_pretrained("cl-tohoku/bert-base-japanese-whole-word-masking")  # この部分は実際のプレトレイン済みの分類モデルに変更してください
+
+
+from transformers import AutoModel, AutoTokenizer, DistilBertForSequenceClassification
+tokenizer = AutoTokenizer.from_pretrained("cl-tohoku/bert-base-japanese-whole-word-masking")
+#model = AutoModel.from_pretrained("bandainamco-mirai/distilbert-base-japanese") 
+tokenizer = AutoTokenizer.from_pretrained("cl-tohoku/bert-base-japanese-whole-word-masking")
+model = DistilBertForSequenceClassification.from_pretrained("distilbert-base-uncased")
+
+#from transformers import BertJapaneseTokenizer
+#from transformers import BertForSequenceClassification
+#tokenizer = BertJapaneseTokenizer.from_pretrained("cl-tohoku/bert-base-japanese-whole-word-masking")
+#model = BertForSequenceClassification.from_pretrained("cl-tohoku/bert-base-japanese-whole-word-masking")  # この部分は実際のプレトレイン済みの分類モデルに変更してください
 
 
 def predict(text):
@@ -176,6 +184,11 @@ def predict(text):
     # 推論
     with torch.no_grad():
         app.logger.debug("現在の日時13: %s", datetime.now())
+
+        # token_type_ids を削除
+        if 'token_type_ids' in input_encodings:
+            del input_encodings['token_type_ids']
+
         outputs = model(**input_encodings)
         app.logger.debug("現在の日時14: %s", datetime.now())
         logits = outputs.logits
