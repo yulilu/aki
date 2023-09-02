@@ -148,7 +148,8 @@ def generatedResponse(response):
 model_path = './src/model_files'
 tokenizer_path = './src/tokenizer_files'
 
-albert_model = AlbertForSequenceClassification.from_pretrained(model_path).cpu().eval()
+#albert_model = AlbertForSequenceClassification.from_pretrained(model_path).cpu().eval()
+albert_model = AlbertForSequenceClassification.from_pretrained(model_path).cpu().half().eval()
 albert_tokenizer = AlbertTokenizer.from_pretrained(tokenizer_path)
 
 def predict(text):
@@ -158,10 +159,13 @@ def predict(text):
     input_encodings = albert_tokenizer(
         text,
         return_tensors='pt',
-        max_length=10, 
+        max_length=70, 
         padding='max_length',
         truncation=True
     )
+    # float16に変換
+    input_encodings = {key: tensor.half() for key, tensor in input_encodings.items()}
+
     app.logger.debug("現在の日時12: %s", datetime.now())
     # 推論
     with torch.no_grad():
